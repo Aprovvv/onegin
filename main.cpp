@@ -61,6 +61,7 @@ static void parse_string(char* str, size_t size)
     size_t i = 0;
     while (str[i] != 0)
     {
+        str[i] = tolower(str[i]);
         if (!isalnum(str[i]) && !isspace(str[i]))
         {
             memmove(str + i, str + i + 1, size - i - 1);
@@ -98,8 +99,8 @@ static int my_strcmp(const char* s1, const char* s2)
     int code_1 = 0, code_2 = 0, i = 0;
 
     do {
-        code_1 = tolower(s1[i]);
-        code_2 = tolower(s2[i]);
+        code_1 = s1[i];
+        code_2 = s2[i];
         i++;
         if (code_1 == 0 && code_2 ==0)
             return 0;
