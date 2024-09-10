@@ -61,10 +61,9 @@ static void parse_string(char* str, size_t size)
     size_t i = 0;
     while (str[i] != 0)
     {
-        //fprintf(stderr, "%c", str[i]);
         if (!isalnum(str[i]) && !isspace(str[i]))
         {
-            memmove(str + i, str + i + 1, size - i);
+            memmove(str + i, str + i + 1, size - i - 1);
             str[length] = 0;
             length--;
             i--;
@@ -75,11 +74,6 @@ static void parse_string(char* str, size_t size)
 
 void swap(void* p1, void* p2, size_t size)
 {
-    /*void* t = calloc(size, 1);
-    memcpy(t, a, size);
-    memcpy(a, b, size);
-    memcpy(b, t, size);
-    free(t);*/
     char t;
     char* char_p1 = (char*)p1;
     char* char_p2 = (char*)p2;
