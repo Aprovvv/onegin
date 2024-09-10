@@ -13,7 +13,6 @@ static void sort_oneg(char oneg[STR_COUNT][STR_LEN]);
 void swap(void* a, void* b, size_t size);
 static void print_oneg(char oneg[STR_COUNT][STR_LEN]);
 static void parse_string(char* str, size_t size);
-static int my_strcmp(const char* s1, const char* s2);
 
 int main()
 {
@@ -49,7 +48,7 @@ static void sort_oneg(char oneg[STR_COUNT][STR_LEN])
             memcpy(s2, oneg[j+1], STR_LEN);
             parse_string(s1, STR_LEN);
             parse_string(s2, STR_LEN);
-            if (my_strcmp(s1, s2) > 0)
+            if (strcmp(s1, s2) > 0)
                 SWAP(oneg[j], oneg[j+1]);
         }
     }
@@ -92,18 +91,4 @@ static void print_oneg(char oneg[STR_COUNT][STR_LEN])
     {
         fputs(oneg[i], stdout);
     }
-}
-
-static int my_strcmp(const char* s1, const char* s2)
-{
-    int code_1 = 0, code_2 = 0, i = 0;
-
-    do {
-        code_1 = s1[i];
-        code_2 = s2[i];
-        i++;
-        if (code_1 == 0 && code_2 ==0)
-            return 0;
-    } while (code_1 - code_2 == 0);
-    return (code_1 - code_2);
 }
