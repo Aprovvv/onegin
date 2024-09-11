@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdint.h>
 
 #define SWAP(a, b) swap(a, b, sizeof(a))
 
@@ -61,7 +62,7 @@ static void parse_string(char* str, size_t size)
     size_t i = 0;
     while (str[i] != 0)
     {
-        str[i] = tolower(str[i]);
+        str[i] = (char)tolower(str[i]);
         if (!isalnum(str[i]) && !isspace(str[i]))
         {
             memmove(str + i, str + i + 1, size - i - 1);
@@ -75,14 +76,40 @@ static void parse_string(char* str, size_t size)
 
 void swap(void* p1, void* p2, size_t size)
 {
-    char t;
-    char* char_p1 = (char*)p1;
-    char* char_p2 = (char*)p2;
-    for (size_t i = 0; i < size; i++)
+    int64_t* int64_p1 = (int64_t*)p1;
+    int64_t* int64_p2 = (int64_t*)p2;
+    int64_t int64_temp = 0;
+    for (; size >= 8; size -= 8)
     {
-        t = char_p1[i];
-        char_p1[i] = char_p2[i];
-        char_p2[i] = t;
+        int64_temp = *int64_p1;
+        *int64_p1 = *int64_p2;
+        *int64_p2 = int64_temp;
+        int64_p1++;
+        int64_p2++;
+    }
+
+    int32_t* int32_p1 = (int32_t*)int64_p1;
+    int32_t* int32_p2 = (int32_t*)int64_p1;
+    int32_t int32_temp = 0;
+    for (; size >= 4; size -= 4)
+    {
+        int32_temp = *int32_p1;
+        *int32_p1 = *int32_p2;
+        *int32_p2 = int32_temp;
+        int32_p1++;
+        int32_p2++;
+    }
+
+    char* char_p1 = (char*)int32_p1;
+    char* char_p2 = (char*)int32_p2;
+    char char_temp = 0;
+    for (; size > 0; size--)
+    {
+        char_temp = *char_p1;
+        *char_p1 = *char_p2;
+        *char_p2 = char_temp;
+        char_p1++;
+        char_p2++;
     }
 }
 
