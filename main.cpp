@@ -22,6 +22,7 @@ int main()
     read_oneg(oneg, pointer_to_onegin);
     sort_oneg(oneg);
     print_oneg(oneg);
+    fclose(pointer_to_onegin);
 }
 
 static void read_oneg(char oneg[STR_COUNT][STR_LEN], FILE* pointer_to_onegin)
