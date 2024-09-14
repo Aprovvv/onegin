@@ -22,6 +22,7 @@ struct text_t read_text_from_file(const char* name);
 void swap(void* p1, void* p2, size_t size);
 static void pr(struct text_t a);
 struct text_t parse_text(struct text_t original);
+static void pr2(struct text_t t);
 
 
 int main()
@@ -32,12 +33,12 @@ int main()
     pr(onegin);
 
     putchar('\n');
-    putchar('\n');
 
     struct text_t parsed_text_p = parse_text(onegin);
-    pr(parsed_text_p);
+    pr2(parsed_text_p);
 
     free(parsed_text_p.text_p);
+    free(parsed_text_p.index_array_p);
     free(onegin.text_p);
     free(onegin.index_array_p);
 }
@@ -46,7 +47,7 @@ struct text_t read_text_from_file(const char* name)
 {
     struct text_t answer = {};
     struct stat data = {};
-    size_t str_count = 1;
+    size_t str_count = 0;
 
     FILE* file_p = fopen(name, "rb");
     stat(name, &data);
@@ -55,7 +56,7 @@ struct text_t read_text_from_file(const char* name)
     fread(answer.text_p, 1, answer.size, file_p);
     *(answer.text_p + answer.size - 1) = '\n';
 
-    for (size_t i = 0; i < answer.size; i++)
+    for (size_t i = 0; i < answer.size - 1; i++)
         if(*(answer.text_p + i) == '\n')
             str_count++;
     answer.str_count = str_count;
@@ -82,25 +83,29 @@ struct text_t read_text_from_file(const char* name)
         if (len > answer.max_str_len)
             answer.max_str_len = len;
     }
+    printf("str_count = %d\n", (int)str_count);
     return answer;
 }
 
 struct text_t parse_text(struct text_t original)
 {
     struct text_t answer = {};
-    //char** parsed_text_index_array = (char**)calloc(original.str_count, sizeof(char*));
+    answer.index_array_p = (char**)calloc(original.str_count, sizeof(char*));
     answer.text_p = (char*)calloc(original.size, 1);
     answer.size = original.size;
+    answer.str_count = original.str_count;
     char* orig_p = original.text_p;
     char* copy_p = answer.text_p;
     size_t line_count = 0;
 
+    *(answer.index_array_p + line_count) = answer.text_p;
     for(size_t i = 0; i < original.size - 1; i++)
     {
         if (*orig_p == '\n')
         {
             *copy_p = '\0';
-            //*(parsed_text_index_array + line_count) =
+            *(answer.index_array_p + line_count) = copy_p + 1;
+            line_count++;
         }
         else
         {
@@ -112,6 +117,10 @@ struct text_t parse_text(struct text_t original)
         orig_p++;
         copy_p++;
     }
+
+    for (int i = 0; i < answer.str_count; i++)
+        printf("%p\n", *(answer.index_array_p + i));
+
     return answer;
 }
 
@@ -122,10 +131,13 @@ static void pr(struct text_t a)
         //printf("%d", *(a.text_p + i));
 }
 
-static void pr2(char* text_p, size_t size)
+static void pr2(struct text_t t)
 {
-    for (size_t i = 0; i < size; i++)
-        putchar(*(text_p+i));
+    for (size_t i = 0; i < t.str_count; i++)
+    {
+        //printf("H");
+        puts(*(t.index_array_p+i));
+    }
 }
 
 void swap(void* p1, void* p2, size_t size)
