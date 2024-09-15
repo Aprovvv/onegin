@@ -15,7 +15,7 @@ void sort_text_t(struct text_t orig, struct text_t parsed);
 
 int main()
 {
-    struct text_t onegin = read_text_from_file("parsed_oneg_1.txt");
+    /*struct text_t onegin = read_text_from_file("parsed_oneg_1.txt");
     pr2(onegin);
 
     putchar('\n');
@@ -33,7 +33,14 @@ int main()
     free(parsed_text_p.text_p);
     free(parsed_text_p.index_array_p);
     free(onegin.text_p);
-    free(onegin.index_array_p);
+    free(onegin.index_array_p);*/
+
+    int arr[] = {152, 84, 95, 45, 12, 68, 2};
+    my_sort(arr, 7, compar_int);
+    for (int i = 0; i < 7; i++)
+    {
+        printf("%d ", arr[i]);
+    }
 }
 
 void sort_text_t(struct text_t orig, struct text_t parsed)
