@@ -10,58 +10,53 @@
 
 #define SWAP(a, b) swap(a, b, sizeof(a))
 
-static void pr2(struct text_t t);
+static void pr(struct text_t t);
 void sort_text_t(struct text_t orig, struct text_t parsed);
+int cmpstr(const void* a, const void* b);
 
 int main()
 {
-    /*struct text_t onegin = read_text_from_file("parsed_oneg_1.txt");
-    pr2(onegin);
+    struct text_t onegin = read_text_from_file("parsed_oneg_1.txt");
+    pr(onegin);
 
     putchar('\n');
 
-    struct text_t parsed_text_p = parse_text(onegin);
-    pr2(parsed_text_p);
+    my_sort(onegin.index_array_p, onegin.str_count, sizeof(char*), cmpstr);
+    pr(onegin);
 
-    putchar('\n');
-
-    sort_text_t(onegin, parsed_text_p);
-    pr2(parsed_text_p);
-    putchar('\n');
-    pr2(onegin);
-
-    free(parsed_text_p.text_p);
-    free(parsed_text_p.index_array_p);
     free(onegin.text_p);
-    free(onegin.index_array_p);*/
-
-    int arr[] = {152, 84, 95, 45, 12, 68, 2};
-    my_sort(arr, 7, compar_int);
-    for (int i = 0; i < 7; i++)
-    {
-        printf("%d ", arr[i]);
-    }
+    free(onegin.index_array_p);
 }
 
-void sort_text_t(struct text_t orig, struct text_t parsed)
-{
-    for (size_t i = 0; i < parsed.str_count - 1; i++)
-    {
-        for (size_t j = 0; j < parsed.str_count - 1; j++)
-        {
-            if (strcmp(parsed.index_array_p[j], parsed.index_array_p[j + 1]) > 0)
-            {
-                swap(&orig.index_array_p[j], &orig.index_array_p[j + 1], sizeof(char*));
-                swap(&parsed.index_array_p[j], &parsed.index_array_p[j + 1], sizeof(char*));
-            }
-        }
-    }
-}
-
-static void pr2(struct text_t t)
+static void pr(struct text_t t)
 {
     for (size_t i = 0; i < t.str_count; i++)
     {
-        puts(*(t.index_array_p+i));
+        puts(*(t.index_array_p + i));
     }
+}
+
+int cmpstr(const void* a, const void* b)
+{
+    const char* real_a = *(const char**)a;
+    const char* real_b = *(const char**)b;
+    const char* a_p = real_a;
+    const char* b_p = real_b;
+    while (*a_p != '\0' && *b_p != '\0')
+    {
+        while(!isalnum(*a_p) && !(*a_p == ' '))
+            a_p++;
+        while(!isalnum(*b_p) && !(*b_p == ' '))
+            b_p++;
+        if (tolower(*a_p) != tolower(*b_p))
+        {
+            return *a_p - *b_p;
+        }
+        else
+        {
+            a_p++;
+            b_p++;
+        }
+    }
+    return *a_p - *b_p;
 }
