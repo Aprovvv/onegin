@@ -17,13 +17,10 @@ int cmpstr(const void* a, const void* b);
 int main()
 {
     struct text_t onegin = read_text_from_file("parsed_onegin.txt");
-    //FILE* output = fopen("sorted_onegin.txt", "w");
-    //printf("%d", onegin.str_count);
-    pr(onegin, stdout);
-    putchar('\n');
+    FILE* output = fopen("sorted_onegin.txt", "w");
 
     my_sort(onegin.index_array_p, onegin.str_count, sizeof(char*), cmpstr);
-    pr(onegin, stdout);
+    pr(onegin, output);
 
     free(onegin.text_p);
     free(onegin.index_array_p);
