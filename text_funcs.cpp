@@ -39,6 +39,7 @@ struct text_t read_text_from_file(const char* name)
             *(answer.index_array_p + current_str_index) = answer.text_p + i + 1;
         }
     }
+    fclose(file_p);
     return answer;
 }
 
