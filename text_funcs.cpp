@@ -28,15 +28,15 @@ struct text_t read_text_from_file(const char* name)
         }
     answer.str_count = str_count;
 
-    answer.index_array_p = (char**)calloc(str_count, sizeof(char*));
-    *answer.index_array_p = answer.text_p;
+    answer.string_array_p = (struct string*)calloc(str_count, sizeof(struct string));
+    answer.string_array_p[0].index = answer.text_p;
     size_t current_str_index = 0;
     for (size_t i = 0; i < answer.size - 2; i++)
     {
         if (*(answer.text_p + i) == '\0')
         {
             current_str_index++;
-            *(answer.index_array_p + current_str_index) = answer.text_p + i + 1;
+            answer.string_array_p[current_str_index].index = answer.text_p + i + 1;
         }
     }
     fclose(file_p);
@@ -46,7 +46,7 @@ struct text_t read_text_from_file(const char* name)
 struct text_t parse_text(struct text_t original)
 {
     struct text_t answer = {};
-    answer.index_array_p = (char**)calloc(original.str_count, sizeof(char*));
+    answer.string_array_p = (struct string*)calloc(original.str_count, sizeof(struct string));
     answer.text_p = (char*)calloc(original.size, 1);
     answer.size = original.size;
     answer.str_count = original.str_count;
@@ -54,7 +54,7 @@ struct text_t parse_text(struct text_t original)
     char* copy_p = answer.text_p;
     size_t line_count = 0;
 
-    *(answer.index_array_p) = copy_p;
+    answer.string_array_p[0].index = copy_p;
     for(size_t i = 0; i < original.size - 1; i++)
     {
         if (isalnum(*orig_p) || *orig_p == ' ')
@@ -65,7 +65,7 @@ struct text_t parse_text(struct text_t original)
             {
                 line_count++;
                 *copy_p = '\0';
-                *(answer.index_array_p + line_count) = copy_p + 1;
+                answer.string_array_p[line_count].index = copy_p + 1;
             }
             else
             {

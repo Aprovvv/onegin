@@ -14,7 +14,7 @@ int main()
 {
     struct text_t onegin = read_text_from_file("onegin.html");
     int count = onegin.str_count;
-    free(onegin.index_array_p);
+    free(onegin.string_array_p);
     free(onegin.text_p);
 
     FILE* original_fp = fopen("onegin.html", "r");
@@ -28,11 +28,6 @@ int main()
     {
         fgets(string, STR_SIZE, original_fp);
         //printf("%s\n", string);
-        while (string[0] == ' ')
-        {
-            strcpy(temp, shit_pointer + 1);
-            strcpy(shit_pointer, temp);
-        }
         while ((shit_pointer = strchr(string + HTML_SHIT, '<')) != NULL)
         {
             int j = 0;
@@ -57,9 +52,14 @@ int main()
         }
         if (strlen(string) < 10 + HTML_SHIT)
             continue;
+        while (*(string + HTML_SHIT) == ' ')
+        {
+            strcpy(temp, string + 1);
+            strcpy(string, temp);
+        }
         fputs(string + HTML_SHIT, parsed_fp);
     }
-    fputc('\n', parsed_fp);
+    //fputc('\n', parsed_fp);
     fclose(original_fp);
     fclose(parsed_fp);
 }
