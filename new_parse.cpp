@@ -24,7 +24,7 @@ int main()
     struct stat data = {};
     char temp[100] = "";
 
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < 14; i++)
     {
         fgets(string, STR_SIZE, original_fp);
         //printf("%s\n", string);

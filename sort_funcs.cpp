@@ -51,7 +51,7 @@ void my_sort(void* data, size_t nmemb, size_t size, cf compare)
         {
             if (compare((char*)data + j * size, (char*)data + (j + 1) * size) > 0)
             {
-                swap((char*)data + j * size, (char*)data + (j + 1) * size, sizeof(int));
+                swap((char*)data + j * size, (char*)data + (j + 1) * size, size);
             }
         }
     }
