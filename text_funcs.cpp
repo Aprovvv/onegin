@@ -7,6 +7,13 @@
 #include <ctype.h>
 #include "text_funcs.h"
 
+struct text_t {
+    size_t size;
+    size_t str_count;
+    char* text_p;
+    struct string* string_array_p;
+};
+
 struct text_t* read_text_from_file(const char* name)
 {
     struct text_t* answer = (struct text_t*)calloc(1, sizeof(struct text_t));
@@ -51,3 +58,36 @@ struct text_t* read_text_from_file(const char* name)
     return answer;
 }
 
+void destruct(struct text_t* struct_p)
+{
+    free(struct_p->text_p);
+    free(struct_p->string_array_p);
+    free(struct_p);
+}
+
+/*struct text_t {
+    size_t size;
+    size_t str_count;
+    char* text_p;
+    struct string* string_array_p;
+};*/
+
+size_t text_t_size(struct text_t* struct_p)
+{
+    return(struct_p->size);
+}
+
+size_t text_t_str_count(struct text_t* struct_p)
+{
+    return(struct_p->str_count);
+}
+
+char* text_t_text_p(struct text_t* struct_p)
+{
+    return(struct_p->text_p);
+}
+
+struct string* text_t_str_arr_p(struct text_t* struct_p)
+{
+    return(struct_p->string_array_p);
+}

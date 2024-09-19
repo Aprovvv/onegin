@@ -17,24 +17,22 @@ int main()
     struct text_t* onegin = read_text_from_file("parsed_onegin.txt");
     FILE* output = fopen("sorted_onegin.txt", "w");
 
-    my_sort(onegin->string_array_p, onegin->str_count, sizeof(struct string), cmpstr);
+    my_sort(text_t_str_arr_p(onegin), text_t_str_count(onegin), sizeof(struct string), cmpstr);
     pr(onegin, output);
 
     fputc('\n', output);
 
-    my_sort(onegin->string_array_p, onegin->str_count, sizeof(struct string), back_cmpstr);
+    my_sort(text_t_str_arr_p(onegin), text_t_str_count(onegin), sizeof(struct string), back_cmpstr);
     pr(onegin, output);
 
-    free(onegin->text_p);
-    free(onegin->string_array_p);
-    free(onegin);
+    destruct(onegin);
 }
 
 static void pr(struct text_t* t, FILE* stream)
 {
-    for (size_t i = 0; i < t->str_count; i++)
+    for (size_t i = 0; i < text_t_str_count(t); i++)
     {
-        fputs(t->string_array_p[i].index, stream);
+        fputs((text_t_str_arr_p(t) + i)->index, stream);
         fputc('\n', stream);
     }
 }
