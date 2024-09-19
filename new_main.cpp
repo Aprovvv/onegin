@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <errno.h>
 #include "text_funcs.h"
 #include "sort_funcs.h"
 
@@ -15,7 +16,14 @@ int back_cmpstr(const void* a, const void* b);
 int main()
 {
     struct text_t* onegin = t_read_from_file("parsed_onegin.txt");
+    if (onegin == NULL)
+        return errno;
     FILE* output = fopen("sorted_onegin.txt", "w");
+    if (errno)
+    {
+        printf("ERROR: failed to open file^ %s", strerror(errno));
+        return errno;
+    }
 
     my_sort(t_string_p(onegin, 0), t_str_count(onegin), string_size(), cmpstr);
     pr(onegin, output);
@@ -51,7 +59,6 @@ int cmpstr(const void* a, const void* b)
             b_p++;
         if (tolower(*a_p) != tolower(*b_p))
         {
-            //fprintf(stderr, "HERE: %d %d\n", tolower(*a_p), tolower(*b_p));
             return tolower(*a_p) - tolower(*b_p);
         }
         else
@@ -71,7 +78,6 @@ int back_cmpstr(const void* a, const void* b)
     const char* b_start = str_line_p(real_b, 0);
     const char* a_p = a_start + str_line_len(real_a, 0) - 1;
     const char* b_p = b_start + str_line_len(real_b, 0) - 1;
-    //fprintf(stderr, "THERE: %d\n", *a_p);
     while(!isalnum(*a_p))
         a_p--;
     while(!isalnum(*b_p))
@@ -84,7 +90,6 @@ int back_cmpstr(const void* a, const void* b)
             b_p--;
         if (tolower(*a_p) != tolower(*b_p))
         {
-            //fprintf(stderr, "HERE: %d %d\n", tolower(*a_p), tolower(*b_p));
             return tolower(*a_p) - tolower(*b_p);
         }
         else

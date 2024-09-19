@@ -23,25 +23,49 @@ struct text_t {
 struct text_t* t_read_from_file(const char* name)
 {
     struct text_t* answer = (struct text_t*)calloc(1, sizeof(struct text_t));
+    if (errno)
+    {
+        printf("ERROR failed to allocate memory for struct text_t: %s", strerror(errno));
+        return NULL;
+    }
     struct stat data = {};
     size_t str_count = 0;
-
     FILE* file_p = fopen(name, "rb");
+    if (errno)
+    {
+        printf("ERROR failed to open file: %s", strerror(errno));
+        return NULL;
+    }
     stat(name, &data);
     answer->text_p = (char*)calloc((size_t)data.st_size + 1, 1);
+    if (errno)
+    {
+        printf("ERROR failed to allocate memory for text: %s", strerror(errno));
+        free(answer);
+        return NULL;
+    }
     answer->size = (size_t)data.st_size + 1;
     fread(answer->text_p, 1, answer->size, file_p);
     *(answer->text_p + answer->size - 1) = '\n';
 
     for (size_t i = 0; i < answer->size - 1; i++)
+    {
         if(*(answer->text_p + i) == '\n')
         {
             str_count++;
             *(answer->text_p + i) = '\0';
         }
+    }
     answer->str_count = str_count;
 
     answer->string_array_p = (struct string*)calloc(str_count, sizeof(struct string));
+    if (errno)
+    {
+        printf("ERROR failed to allocate memory for struct string* array: %s", strerror(errno));
+        free(answer->text_p);
+        free(answer);
+        return NULL;
+    }
     answer->string_array_p[0].index = answer->text_p;
     size_t current_str_index = 0;
     int prev_i = -1;
@@ -53,13 +77,9 @@ struct text_t* t_read_from_file(const char* name)
             answer->string_array_p[current_str_index].index = answer->text_p + i + 1;
             answer->string_array_p[current_str_index - 1].len = i - (size_t)prev_i - 1;
             prev_i = (int)i;
-            //fprintf(stderr, "Строка %d, len = %d, strlen = %d\n",
-            //current_str_index - 1, answer->string_array_p[current_str_index - 1].len, strlen(answer->string_array_p[current_str_index - 1].index);
         }
     }
     answer->string_array_p[current_str_index].len = answer->size - 3 - (size_t)prev_i;
-    //fprintf(stderr, "Строка %d, len = %d, strlen = %d\n",
-    //current_str_index, answer->string_array_p[current_str_index].len, strlen(answer->string_array_p[current_str_index].index));
     fclose(file_p);
     return answer;
 }
