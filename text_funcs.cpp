@@ -5,7 +5,13 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <errno.h>
 #include "text_funcs.h"
+
+struct string {
+    char* index;
+    size_t len;
+};
 
 struct text_t {
     size_t size;
@@ -65,23 +71,79 @@ void t_destruct(struct text_t* struct_p)
     free(struct_p);
 }
 
-size_t t_size(struct text_t* struct_p)
+size_t t_size(const struct text_t* struct_p)
 {
-    return(struct_p->size);
+    size_t result = struct_p->size;
+    if (errno)
+        return SIZE_T_ERROR;
+    else
+        return result;
 }
 
-size_t t_str_count(struct text_t* struct_p)
+size_t t_str_count(const struct text_t* struct_p)
 {
-    return(struct_p->str_count);
+    size_t result = struct_p->str_count;
+    if (errno)
+        return SIZE_T_ERROR;
+    else
+        return result;
 }
 
-char* t_text_p(struct text_t* struct_p)
+char* t_text_p(const struct text_t* struct_p)
 {
-    return(struct_p->text_p);
+    char* result = struct_p->text_p;
+    if (errno)
+        return NULL;
+    else
+        return result;
 }
 
-struct string* t_str_arr_p(struct text_t* struct_p)
+struct string* t_string_p(const struct text_t* struct_p, size_t string_numb)
 {
-    return(struct_p->string_array_p);
+    struct string* result = struct_p->string_array_p + string_numb;
+    if (errno)
+        return NULL;
+    else
+        return result;
 }
 
+size_t t_line_len(const struct text_t* struct_p, size_t line_number)
+{
+    size_t result = (struct_p->string_array_p + line_number)->len;
+    if (errno)
+        return SIZE_T_ERROR;
+    else
+        return result;
+}
+
+size_t str_line_len(const struct string* struct_p, size_t line_number)
+{
+    size_t result = (struct_p + line_number)->len;
+    if (errno)
+        return SIZE_T_ERROR;
+    else
+        return result;
+}
+
+char* t_line_p(const struct text_t* struct_p, size_t line_number)
+{
+    char* result = (struct_p->string_array_p + line_number)->index;
+    if (errno)
+        return NULL;
+    else
+        return result;
+}
+
+char* str_line_p(const struct string* struct_p, size_t line_number)
+{
+    char* result = (struct_p + line_number)->index;
+    if (errno)
+        return NULL;
+    else
+        return result;
+}
+
+size_t string_size(void)
+{
+    return (sizeof(string));
+}

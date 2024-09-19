@@ -1,17 +1,23 @@
 #ifndef TEXT_FUNCS_H
 #define TEXT_FUNCS_H
+#include <limits.h>
 
-struct string {
-    char* index;
-    size_t len;
-};
+const long unsigned int SIZE_T_ERROR = ULONG_MAX;
+
+struct string;
 
 struct text_t;
 
 struct text_t* t_read_from_file(const char* name);
 void t_destruct(struct text_t* struct_p);
-size_t t_size(struct text_t* struct_p);
-size_t t_str_count(struct text_t* struct_p);
-char* t_text_p(struct text_t* struct_p);
-struct string* t_str_arr_p(struct text_t* struct_p);
+size_t t_size(const struct text_t* struct_p);
+size_t t_str_count(const struct text_t* struct_p);
+char* t_text_p(const struct text_t* struct_p);
+struct string* t_string_p(const struct text_t* struct_p);
+size_t t_line_len(const struct text_t* struct_p, size_t line_number);
+struct string* t_string_p(const struct text_t* struct_p, size_t string_numb);
+char* t_line_p(const struct text_t* struct_p, size_t line_number);
+size_t string_size(void);
+char* str_line_p(const struct string* struct_p, size_t line_number);
+size_t str_line_len(const struct string* struct_p, size_t line_number);
 #endif
