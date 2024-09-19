@@ -19,14 +19,13 @@ int main()
     struct text_t onegin = read_text_from_file("parsed_onegin.txt");
     FILE* output = fopen("sorted_onegin.txt", "w");
 
-    //printf("BLYAAAA %d %d\n", onegin.string_array_p[1].len, strlen(onegin.string_array_p[1].index));
-    my_sort(onegin.string_array_p, onegin.str_count, sizeof(struct string), back_cmpstr);
+    my_sort(onegin.string_array_p, onegin.str_count, sizeof(struct string), cmpstr);
     pr(onegin, output);
 
     fputc('\n', output);
 
-    /*my_sort(onegin.string_array_p, onegin.str_count, sizeof(struct string), back_cmpstr);
-    pr(onegin, output);*/
+    my_sort(onegin.string_array_p, onegin.str_count, sizeof(struct string), back_cmpstr);
+    pr(onegin, output);
 
     free(onegin.text_p);
     free(onegin.string_array_p);
