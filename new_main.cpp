@@ -14,25 +14,25 @@ int back_cmpstr(const void* a, const void* b);
 
 int main()
 {
-    struct text_t* onegin = read_text_from_file("parsed_onegin.txt");
+    struct text_t* onegin = t_read_from_file("parsed_onegin.txt");
     FILE* output = fopen("sorted_onegin.txt", "w");
 
-    my_sort(text_t_str_arr_p(onegin), text_t_str_count(onegin), sizeof(struct string), cmpstr);
+    my_sort(t_str_arr_p(onegin), t_str_count(onegin), sizeof(struct string), cmpstr);
     pr(onegin, output);
 
     fputc('\n', output);
 
-    my_sort(text_t_str_arr_p(onegin), text_t_str_count(onegin), sizeof(struct string), back_cmpstr);
+    my_sort(t_str_arr_p(onegin), t_str_count(onegin), sizeof(struct string), back_cmpstr);
     pr(onegin, output);
 
-    destruct(onegin);
+    t_destruct(onegin);
 }
 
 static void pr(struct text_t* t, FILE* stream)
 {
-    for (size_t i = 0; i < text_t_str_count(t); i++)
+    for (size_t i = 0; i < t_str_count(t); i++)
     {
-        fputs((text_t_str_arr_p(t) + i)->index, stream);
+        fputs((t_str_arr_p(t) + i)->index, stream);
         fputc('\n', stream);
     }
 }
