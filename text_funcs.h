@@ -13,6 +13,5 @@ struct text_t {
     struct string* string_array_p;
 };
 
-struct text_t read_text_from_file(const char* name);
-struct text_t parse_text(struct text_t original);
+struct text_t* read_text_from_file(const char* name);
 #endif

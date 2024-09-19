@@ -7,81 +7,47 @@
 #include <ctype.h>
 #include "text_funcs.h"
 
-struct text_t read_text_from_file(const char* name)
+struct text_t* read_text_from_file(const char* name)
 {
-    struct text_t answer = {};
+    struct text_t* answer = (struct text_t*)calloc(1, sizeof(struct text_t));
     struct stat data = {};
     size_t str_count = 0;
 
     FILE* file_p = fopen(name, "rb");
     stat(name, &data);
-    answer.text_p = (char*)calloc((size_t)data.st_size + 1, 1);
-    answer.size = (size_t)data.st_size + 1;
-    fread(answer.text_p, 1, answer.size, file_p);
-    *(answer.text_p + answer.size - 1) = '\n';
+    answer->text_p = (char*)calloc((size_t)data.st_size + 1, 1);
+    answer->size = (size_t)data.st_size + 1;
+    fread(answer->text_p, 1, answer->size, file_p);
+    *(answer->text_p + answer->size - 1) = '\n';
 
-    for (size_t i = 0; i < answer.size - 1; i++)
-        if(*(answer.text_p + i) == '\n')
+    for (size_t i = 0; i < answer->size - 1; i++)
+        if(*(answer->text_p + i) == '\n')
         {
             str_count++;
-            *(answer.text_p + i) = '\0';
+            *(answer->text_p + i) = '\0';
         }
-    answer.str_count = str_count;
+    answer->str_count = str_count;
 
-    answer.string_array_p = (struct string*)calloc(str_count, sizeof(struct string));
-    answer.string_array_p[0].index = answer.text_p;
+    answer->string_array_p = (struct string*)calloc(str_count, sizeof(struct string));
+    answer->string_array_p[0].index = answer->text_p;
     size_t current_str_index = 0;
     int prev_i = -1;
-    for (size_t i = 0; i < answer.size - 2; i++)
+    for (size_t i = 0; i < answer->size - 2; i++)
     {
-        if (*(answer.text_p + i) == '\0')
+        if (*(answer->text_p + i) == '\0')
         {
             current_str_index++;
-            answer.string_array_p[current_str_index].index = answer.text_p + i + 1;
-            answer.string_array_p[current_str_index - 1].len = i - (size_t)prev_i - 1;
+            answer->string_array_p[current_str_index].index = answer->text_p + i + 1;
+            answer->string_array_p[current_str_index - 1].len = i - (size_t)prev_i - 1;
             prev_i = (int)i;
             //fprintf(stderr, "Строка %d, len = %d, strlen = %d\n",
-            //current_str_index - 1, answer.string_array_p[current_str_index - 1].len, strlen(answer.string_array_p[current_str_index - 1].index);
+            //current_str_index - 1, answer->string_array_p[current_str_index - 1].len, strlen(answer->string_array_p[current_str_index - 1].index);
         }
     }
-    answer.string_array_p[current_str_index].len = answer.size - 3 - (size_t)prev_i;
+    answer->string_array_p[current_str_index].len = answer->size - 3 - (size_t)prev_i;
     //fprintf(stderr, "Строка %d, len = %d, strlen = %d\n",
-    //current_str_index, answer.string_array_p[current_str_index].len, strlen(answer.string_array_p[current_str_index].index));
+    //current_str_index, answer->string_array_p[current_str_index].len, strlen(answer->string_array_p[current_str_index].index));
     fclose(file_p);
     return answer;
 }
 
-struct text_t parse_text(struct text_t original)
-{
-    struct text_t answer = {};
-    answer.string_array_p = (struct string*)calloc(original.str_count, sizeof(struct string));
-    answer.text_p = (char*)calloc(original.size, 1);
-    answer.size = original.size;
-    answer.str_count = original.str_count;
-    char* orig_p = original.text_p;
-    char* copy_p = answer.text_p;
-    size_t line_count = 0;
-
-    answer.string_array_p[0].index = copy_p;
-    for(size_t i = 0; i < original.size - 1; i++)
-    {
-        if (isalnum(*orig_p) || *orig_p == ' ')
-            *copy_p = (char)tolower(*orig_p);
-        else
-        {
-            if (*orig_p == '\0' && i < original.size - 2)
-            {
-                line_count++;
-                *copy_p = '\0';
-                answer.string_array_p[line_count].index = copy_p + 1;
-            }
-            else
-            {
-                *copy_p--;
-            }
-        }
-        orig_p++;
-        copy_p++;
-    }
-    return answer;
-}
