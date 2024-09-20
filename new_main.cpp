@@ -2,26 +2,37 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <errno.h>
 #include "text_funcs.h"
 #include "sort_funcs.h"
+#include "color_print/color_print.h"
+#include "flag.h"
+
+const int flag_count = 2;
+const struct flag_struct all_flags[flag_count] = {
+{'o', "o"},
+{'i', "i"}
+};
 
 static void pr(struct text_t* t, FILE* stream);
-int cmpstr(const void* a, const void* b);
-int back_cmpstr(const void* a, const void* b);
+static int cmpstr(const void* a, const void* b);
+static int back_cmpstr(const void* a, const void* b);
+static int check_names(const char** output_name, const char** onegin_name, int argc, char* argv[]);
 
-int main()
+int main(int argc, char* argv[])
 {
-    struct text_t* onegin = t_read_from_file("parsed_onegin.txt");
+    const char* onegin_name = "parsed_onegin.txt";
+    const char* output_name = "sorted_onegin.txt";
+    if (check_names(&output_name, &onegin_name, argc, argv) == 1)
+        return 1;
+
+    struct text_t* onegin = t_read_from_file(onegin_name);
     if (onegin == NULL)
         return errno;
-    FILE* output = fopen("sorted_onegin.txt", "w");
+    FILE* output = fopen(output_name, "w");
     if (errno)
     {
-        printf("ERROR: failed to open file^ %s", strerror(errno));
+        fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: failed to open file %s: %s\n", output_name, strerror(errno));
         return errno;
     }
 
@@ -45,7 +56,7 @@ static void pr(struct text_t* t, FILE* stream)
     }
 }
 
-int cmpstr(const void* a, const void* b)
+static int cmpstr(const void* a, const void* b)
 {
     const struct string* real_a = (const struct string*)a;
     const struct string* real_b = (const struct string*)b;
@@ -70,7 +81,7 @@ int cmpstr(const void* a, const void* b)
     return *a_p - *b_p;
 }
 
-int back_cmpstr(const void* a, const void* b)
+static int back_cmpstr(const void* a, const void* b)
 {
     const struct string* real_a = (const struct string*)a;
     const struct string* real_b = (const struct string*)b;
@@ -99,4 +110,42 @@ int back_cmpstr(const void* a, const void* b)
         }
     }
     return *a_p - *b_p;
+}
+
+static int check_names(const char** output_name, const char** onegin_name, int argc, char* argv[])
+{
+    for (int i = 1; i < argc; i++)
+    {
+        int flag = analyze_flag(all_flags, flag_count, argv[i]);
+        switch (flag)
+        {
+        case 'o':
+            if (i < argc - 1)
+            {
+                *output_name = argv[i + 1];
+                i++;
+            }
+            else
+            {
+                fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: -o requires name of file\n");
+                return 1;
+            }
+            break;
+        case 'i':
+            if (i < argc - 1)
+            {
+                *onegin_name = argv[i + 1];
+                i++;
+            }
+            else
+            {
+                fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: -i requires name of file\n");
+                return 1;
+            }
+            break;
+        default:
+            fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: undefined flag\n");
+        }
+    }
+    return 0;
 }

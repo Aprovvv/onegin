@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include "text_funcs.h"
+#include "color_print/color_print.h"
 
 struct string {
     char* index;
@@ -25,7 +26,7 @@ struct text_t* t_read_from_file(const char* name)
     struct text_t* answer = (struct text_t*)calloc(1, sizeof(struct text_t));
     if (errno)
     {
-        printf("ERROR failed to allocate memory for struct text_t: %s", strerror(errno));
+        fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR failed to allocate memory for struct text_t: %s\n", strerror(errno));
         return NULL;
     }
     struct stat data = {};
@@ -33,14 +34,15 @@ struct text_t* t_read_from_file(const char* name)
     FILE* file_p = fopen(name, "rb");
     if (errno)
     {
-        printf("ERROR failed to open file: %s", strerror(errno));
+        fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR failed to open file %s: %s\n", name, strerror(errno));
+        free(answer);
         return NULL;
     }
     stat(name, &data);
     answer->text_p = (char*)calloc((size_t)data.st_size + 1, 1);
     if (errno)
     {
-        printf("ERROR failed to allocate memory for text: %s", strerror(errno));
+        fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR failed to allocate memory for text: %s\n", strerror(errno));
         free(answer);
         return NULL;
     }
@@ -61,7 +63,7 @@ struct text_t* t_read_from_file(const char* name)
     answer->string_array_p = (struct string*)calloc(str_count, sizeof(struct string));
     if (errno)
     {
-        printf("ERROR failed to allocate memory for struct string* array: %s", strerror(errno));
+        fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR failed to allocate memory for struct string* array: %s\n", strerror(errno));
         free(answer->text_p);
         free(answer);
         return NULL;
@@ -93,74 +95,42 @@ void t_destruct(struct text_t* struct_p)
 
 size_t t_size(const struct text_t* struct_p)
 {
-    size_t result = struct_p->size;
-    if (errno)
-        return SIZE_T_ERROR;
-    else
-        return result;
+    return struct_p->size;
 }
 
 size_t t_str_count(const struct text_t* struct_p)
 {
-    size_t result = struct_p->str_count;
-    if (errno)
-        return SIZE_T_ERROR;
-    else
-        return result;
+    return struct_p->str_count;
 }
 
 char* t_text_p(const struct text_t* struct_p)
 {
-    char* result = struct_p->text_p;
-    if (errno)
-        return NULL;
-    else
-        return result;
+    return struct_p->text_p;
 }
 
 struct string* t_string_p(const struct text_t* struct_p, size_t string_numb)
 {
-    struct string* result = struct_p->string_array_p + string_numb;
-    if (errno)
-        return NULL;
-    else
-        return result;
+    return struct_p->string_array_p + string_numb;
 }
 
 size_t t_line_len(const struct text_t* struct_p, size_t line_number)
 {
-    size_t result = (struct_p->string_array_p + line_number)->len;
-    if (errno)
-        return SIZE_T_ERROR;
-    else
-        return result;
+    return (struct_p->string_array_p + line_number)->len;
 }
 
 size_t str_line_len(const struct string* struct_p, size_t line_number)
 {
-    size_t result = (struct_p + line_number)->len;
-    if (errno)
-        return SIZE_T_ERROR;
-    else
-        return result;
+    return (struct_p + line_number)->len;
 }
 
 char* t_line_p(const struct text_t* struct_p, size_t line_number)
 {
-    char* result = (struct_p->string_array_p + line_number)->index;
-    if (errno)
-        return NULL;
-    else
-        return result;
+    return (struct_p->string_array_p + line_number)->index;
 }
 
 char* str_line_p(const struct string* struct_p, size_t line_number)
 {
-    char* result = (struct_p + line_number)->index;
-    if (errno)
-        return NULL;
-    else
-        return result;
+    return (struct_p + line_number)->index;
 }
 
 size_t string_size(void)
