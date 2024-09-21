@@ -10,38 +10,46 @@
 
 const int flag_count = 2;
 const struct flag_struct all_flags[flag_count] = {
-{'o', "o"},
-{'i', "i"}
+    {'o', "o"},
+    {'i', "i"}
 };
 
 static void pr(struct text_t* t, FILE* stream);
 static int cmpstr(const void* a, const void* b);
 static int back_cmpstr(const void* a, const void* b);
-static int check_names(const char** output_name, const char** onegin_name, int argc, char* argv[]);
+static int check_names(const char** output_name,
+                       const char** onegin_name,
+                       int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 {
     const char* onegin_name = "parsed_onegin.txt";
     const char* output_name = "sorted_onegin.txt";
     if (check_names(&output_name, &onegin_name, argc, argv) == 1)
-        return 1;
+        return EXIT_FAILURE;
 
-    struct text_t* onegin = t_read_from_file(onegin_name);
+    struct text_t* onegin = text_t_read_from_file(onegin_name);
     if (onegin == NULL)
-        return errno;
+        return EXIT_FAILURE;
     FILE* output = fopen(output_name, "w");
     if (errno)
     {
-        fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: failed to open file %s: %s\n", output_name, strerror(errno));
-        return errno;
+        fprintf_color(stderr, CONSOLE_TEXT_RED,
+                      "ERROR: failed to open file %s: %s\n",
+                      output_name, strerror(errno));
+        return EXIT_FAILURE;
     }
 
-    my_sort(t_string_p(onegin, 0), t_str_count(onegin), string_size(), cmpstr);
+    bubble_sort(text_t_string_p(onegin, 0),
+                text_t_str_count(onegin),
+                string_size(), cmpstr);
     pr(onegin, output);
 
     fputc('\n', output);
 
-    my_sort(t_string_p(onegin, 0), t_str_count(onegin), string_size(), back_cmpstr);
+    bubble_sort(text_t_string_p(onegin, 0),
+                text_t_str_count(onegin),
+                string_size(), back_cmpstr);
     pr(onegin, output);
 
     t_destruct(onegin);
@@ -49,9 +57,9 @@ int main(int argc, char* argv[])
 
 static void pr(struct text_t* t, FILE* stream)
 {
-    for (size_t i = 0; i < t_str_count(t); i++)
+    for (size_t i = 0; i < text_t_str_count(t); i++)
     {
-        fputs(t_line_p(t, i), stream);
+        fputs(text_t_line_p(t, i), stream);
         fputc('\n', stream);
     }
 }
@@ -60,8 +68,8 @@ static int cmpstr(const void* a, const void* b)
 {
     const struct string* real_a = (const struct string*)a;
     const struct string* real_b = (const struct string*)b;
-    const char* a_p = str_line_p(real_a, 0);
-    const char* b_p = str_line_p(real_b, 0);
+    const char* a_p = string_line_p(real_a, 0);
+    const char* b_p = string_line_p(real_b, 0);
     while (*a_p != '\0' && *b_p != '\0')
     {
         while(!isalnum(*a_p) && *a_p != ' ')
@@ -85,10 +93,10 @@ static int back_cmpstr(const void* a, const void* b)
 {
     const struct string* real_a = (const struct string*)a;
     const struct string* real_b = (const struct string*)b;
-    const char* a_start = str_line_p(real_a, 0);
-    const char* b_start = str_line_p(real_b, 0);
-    const char* a_p = a_start + str_line_len(real_a, 0) - 1;
-    const char* b_p = b_start + str_line_len(real_b, 0) - 1;
+    const char* a_start = string_line_p(real_a, 0);
+    const char* b_start = string_line_p(real_b, 0);
+    const char* a_p = a_start + string_line_len(real_a, 0) - 1;
+    const char* b_p = b_start + string_line_len(real_b, 0) - 1;
     while(!isalnum(*a_p))
         a_p--;
     while(!isalnum(*b_p))
@@ -112,7 +120,9 @@ static int back_cmpstr(const void* a, const void* b)
     return *a_p - *b_p;
 }
 
-static int check_names(const char** output_name, const char** onegin_name, int argc, char* argv[])
+static int check_names(const char** output_name,
+                       const char** onegin_name,
+                       int argc, char* argv[])
 {
     for (int i = 1; i < argc; i++)
     {
@@ -127,7 +137,8 @@ static int check_names(const char** output_name, const char** onegin_name, int a
             }
             else
             {
-                fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: -o requires name of file\n");
+                fprintf_color(stderr, CONSOLE_TEXT_RED,
+                              "ERROR: -o requires name of file\n");
                 return 1;
             }
             break;
@@ -139,12 +150,14 @@ static int check_names(const char** output_name, const char** onegin_name, int a
             }
             else
             {
-                fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: -i requires name of file\n");
+                fprintf_color(stderr, CONSOLE_TEXT_RED,
+                              "ERROR: -i requires name of file\n");
                 return 1;
             }
             break;
         default:
-            fprintf_color(stderr, CONSOLE_TEXT_RED, "ERROR: undefined flag\n");
+            fprintf_color(stderr, CONSOLE_TEXT_RED,
+                          "ERROR: undefined flag\n");
         }
     }
     return 0;

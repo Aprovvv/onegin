@@ -8,7 +8,8 @@
  * \param argv {аргумент, который надо проанализировать}
  * \returns 0, если ошибка, код флага по ASCII, если все ок
  */
-int analyze_flag(const struct flag_struct all_flags[], int flag_count, const char* argv);
+int analyze_flag(const struct flag_struct all_flags[],
+                 int flag_count, const char* argv);
 
 struct flag_struct
 {

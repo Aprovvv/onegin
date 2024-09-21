@@ -5,7 +5,8 @@
 #include <string.h>
 #include "flag.h"
 
-int analyze_flag(const struct flag_struct all_flags[], int flag_count, const char* argv)
+int analyze_flag(const struct flag_struct all_flags[],
+                 int flag_count, const char* argv)
 {
     if (argv[0] != '-')
         return 0;

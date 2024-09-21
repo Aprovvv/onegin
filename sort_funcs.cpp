@@ -29,23 +29,25 @@ void swap(void* p1, void* p2, size_t size)
     }
     for (; size > 0; size--)
     {
-        memcpy(&char_temp, char_p1, 1);
-        memcpy(char_p1, char_p2, 1);
-        memcpy(char_p2, &char_temp, 1);
+        char_temp = *char_p1;
+        *char_p1 = *char_p2;
+        *char_p2 = char_temp;
         char_p1++;
         char_p2++;
     }
 }
 
-void my_sort(void* data, size_t nmemb, size_t size, cf compare)
+void bubble_sort(void* data, size_t nmemb,
+                 size_t size, comparator compare)
 {
+    char* ptr = (char*)data;
     for (size_t i = 0; i < nmemb - 1; i++)
     {
         for (size_t j = 0; j < nmemb - 1; j++)
         {
-            if (compare((char*)data + j * size, (char*)data + (j + 1) * size) > 0)
+            if (compare(ptr + j*size, ptr + (j + 1)*size) > 0)
             {
-                swap((char*)data + j * size, (char*)data + (j + 1) * size, size);
+                swap(ptr + j*size, ptr + (j + 1)*size, size);
             }
         }
     }

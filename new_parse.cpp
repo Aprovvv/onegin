@@ -12,7 +12,7 @@ const int HTML_SHIT = 25;
 
 int main()
 {
-    struct text_t onegin = t_read_from_file("onegin.html");
+    struct text_t onegin = text_t_read_from_file("onegin.html");
     int count = onegin.str_count;
     free(onegin.string_array_p);
     free(onegin.text_p);
